@@ -8436,14 +8436,14 @@
               ImageOutput: Gf
             },
             data: function() {
-              return {
+              return { //Start config
                 image: null,
                 outputMedia: "Text",
                 renderMode: "Squares",
                 imageDimensionsH: 500,
                 imageScale: 1,
                 imageGrid: 17,
-                textDimensionsH: 16,
+                textDimensionsH: 30,
                 skintoneEmoji: "👌",
                 halftoneEmoji: "💩",
                 colorVendor: "detect"
