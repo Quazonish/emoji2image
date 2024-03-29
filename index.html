@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+	<title>Image To Emoji Converter 🖼️➡️😀</title>
+
+	<script type='application/ld+json'>
+		{
+			"@context": "http://schema.org/",
+			"@type": "WebSite",
+			"url": "https://emojimage.com",
+			"name": "Image to Emoji Converter",
+			"inLanguage": "en-US"
+		}
+	</script>
+
+	<link href="index.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="container" id="app">
+		<div class="row">
+
+			<div class="col-12 card controls-row mt-3 mb-3">
+				<div class="card-body row">
+
+					<image-input class="col-md-4" @update:image="selectCustomImage($event)"></image-input>
+
+					<div class="output-controls col-md-8" :class="{'have-image': image}">
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: outputMedia == 'Text'}" href="#"
+									@click="outputMedia = 'Text'">Text 📋</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: outputMedia == 'Image'}" href="#"
+									@click="outputMedia = 'Image'">Image 🖼️</a>
+							</li>
+						</ul>
+
+						<div class="tab-content">
+							<div class="tab-pane" :class="{active: outputMedia == 'Text'}">
+								<div class="form-group row">
+									<label class="col-sm-2">Size</label>
+									<div class="input-group col-sm-10">
+										<div class="input-group-text">{{ textDimensionsPretty }}</div>
+										<input class="form-control form-range" type="range"
+											min="6" max="64" step="1" v-model.number="textDimensionsH" />
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane" :class="{active: outputMedia == 'Image'}">
+								<div class="form-group row">
+									<label class="col-sm-2">Size</label>
+									<div class="input-group col-sm-10">
+										<div class="input-group-text">{{ imageDimensionsPretty }}</div>
+										<input class="form-control form-range" type="range"
+											min="256" max="1024" step="128" v-model.number="imageDimensionsH" />
+									</div>
+
+									<label class="col-sm-2">Grid</label>
+									<div class="input-group col-sm-10">
+										<div class="input-group-text">Small</div>
+										<input class="form-control form-range" type="range" min="10" max="24"
+											step="1" v-model.number="imageGrid" />
+										<div class="input-group-text">Large</div>
+									</div>
+
+									<label class="col-sm-2">Scale</label>
+									<div class="input-group col-sm-10">
+										<div class="input-group-text">Small</div>
+										<input class="form-control form-range" type="range" min="0.6" max="1.4"
+											step="0.1" v-model.number="imageScale" />
+										<div class="input-group-text">Large</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: renderMode == 'Skintone'}" href="#"
+									@click="renderMode = 'Skintone'">Skintone 👋🏿</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: renderMode == 'Halftone'}" href="#"
+									@click="renderMode = 'Halftone'">Halftone 🤏</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: renderMode == 'Color'}" href="#"
+									@click="renderMode = 'Color'">Mosaic 🎨</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: renderMode == 'Squares'}" href="#"
+									@click="renderMode = 'Squares'">Squares 🟩</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" :class="{active: renderMode == 'Hearts'}" href="#"
+									@click="renderMode = 'Hearts'">Hearts 💜</a>
+							</li>
+						</ul>
+
+						<div class="tab-content">
+							<div class="tab-pane" :class="{active: renderMode == 'Skintone'}">
+								<div class="form-group row">
+									<label class="col-sm-2">Emoji</label>
+									<emoji-input class="col-sm-10" v-model="skintoneEmoji" subset="SKINTONE_ABLE"></emoji-input>
+								</div>
+							</div>
+
+							<div class="tab-pane" :class="{active: renderMode == 'Halftone'}">
+								<div class="form-group row">
+									<label class="col-sm-2">Emoji</label>
+									<emoji-input class="col-sm-10" v-model="halftoneEmoji"></emoji-input>
+								</div>
+							</div>
+
+							<div class="tab-pane" :class="{active: renderMode == 'Color'}">
+								<div class="form-group row">
+									<label class="col-sm-2">Vendor</label>
+									<div class="col-sm-10">
+										<select class="custom-select" v-model="colorVendor">
+											<option value="detect">
+												Detected: {{ prettyEmojiVendors[emojiVendor] }}
+											</option>
+											<option v-for="(v, k) in prettyEmojiVendors" :value="k">{{ v }}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="select-image-hint" title="Select an image first!"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row mb-3" id="output">
+			<div class="card">
+				<emoji-renderer v-if="outputOptions" class="card-body"
+					:image="image" :options="outputOptions"></emoji-renderer>
+			</div>
+		</div>
+
+	</div>
+
+	<script>
+		window.addEventListener("load", function() {
+			window.cookieconsent.initialise({
+				"palette": {
+					"popup": {
+						"background": "#edeff5",
+						"text": "#838391"
+					},
+					"button": {
+						"background": "#4b81e8"
+					}
+				},
+				"theme": "edgeless",
+				"content": {
+					"href": "/privacy.txt"
+				}
+			});
+		});
+	</script>
+
+	<script src="index.bundle.js"></script>
+</body>
+</html>
