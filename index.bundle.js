@@ -8439,7 +8439,7 @@
               return {
                 image: null,
                 outputMedia: "Text",
-                renderMode: "Color",
+                renderMode: "Squares",
                 imageDimensionsH: 500,
                 imageScale: 1,
                 imageGrid: 17,
