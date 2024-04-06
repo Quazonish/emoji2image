@@ -1,4 +1,14 @@
 (() => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  let rm = urlParams.get('renderMode');
+  let textSize = urlParams.get('textSize');
+  if(rm == null){
+    rm = "Squares";
+  }
+  if(textSize == null){
+    textSize = 30;
+  }
     var e = {
         7334: (e, t, n) => {
           "use strict";
@@ -8439,11 +8449,11 @@
               return { //Start config
                 image: null,
                 outputMedia: "Text",
-                renderMode: "Squares",
+                renderMode: rm,
                 imageDimensionsH: 500,
                 imageScale: 1,
                 imageGrid: 17,
-                textDimensionsH: 30,
+                textDimensionsH: textSize,
                 skintoneEmoji: "👌",
                 halftoneEmoji: "💩",
                 colorVendor: "detect"
